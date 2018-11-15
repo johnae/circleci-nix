@@ -28,16 +28,12 @@ rec {
     env
   '';
 
-
   stuff-stuff = writeStrictShellScriptBin "stuff-stuff" ''
     echo Doing some stuff
   '';
 
   cached-packages = writeStrictShellScriptBin "cached-packages" ''
-    nix-store -qR \
-       $(${which}/bin/which docker) \
-       $(${which}/bin/which gcloud) \
-       $(${which}/bin/which kustomize)
+    nix-store -qR ${docker} ${google-cloud-sdk} ${kustomize}
   '';
 
 }
