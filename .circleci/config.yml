@@ -41,7 +41,12 @@ jobs:
       - run:
           name: Restore nix cache
           command: |
-            test -e /nix-cache/deploy.nar && nix-store --import < /nix-cache/deploy.nar
+            if [ -e /nix-cache/deploy.nar ]; then
+              echo "/nix-cache/deploy.nar present, importing into store."
+              nix-store --import < /nix-cache/deploy.nar
+            else
+              echo "/nix-cache/deploy.nar missing, skipping store import."
+            fi
 
       - setup_remote_docker
 
@@ -69,3 +74,5 @@ workflows:
     jobs:
       - test
       - stuff
+          requires:
+            - test
