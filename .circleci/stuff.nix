@@ -16,7 +16,6 @@ in
     name = "stuff";
     buildInputs = with stuff-tools; [
        cached-packages
-       print-info
        stuff-stuff
        shell-init
     ];
@@ -29,7 +28,6 @@ in
                ''export ${key}=${value}''
     )}
 
-    print-info
     shell-init
 
     '';

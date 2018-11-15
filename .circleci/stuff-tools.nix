@@ -10,18 +10,6 @@
 
 rec {
 
-  print-info = writeStrictShellScriptBin "print-info" ''
-
-    echo ""
-    echo "---------- Software Versions ------------"
-    echo kustomize: $(${kustomize}/bin/kustomize version)
-    echo docker: $(${docker}/bin/docker -v)
-    echo gcloud: $(${google-cloud-sdk}/bin/gcloud -v)
-    echo "-----------------------------------------"
-    echo ""
-
-  '';
-
 
   shell-init = writeStrictShellScriptBin "shell-init" ''
     echo Init shell
@@ -33,7 +21,7 @@ rec {
   '';
 
   cached-packages = writeStrictShellScriptBin "cached-packages" ''
-    nix-store -qR ${docker} ${google-cloud-sdk} ${kustomize}
+    nix-store -qR ${google-cloud-sdk} ${docker} ${kustomize}
   '';
 
 }
