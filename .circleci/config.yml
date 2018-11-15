@@ -34,18 +34,18 @@ jobs:
 
       - restore_cache:
           keys:
-            - nix-cache-deploy-v1-{{ .Branch }}-{{ .Revision }}
-            - nix-cache-deploy-v1-{{ .Branch }}-
-            - nix-cache-deploy-v1-
+            - nix-cache-stuff-v2-{{ .Branch }}-{{ .Revision }}
+            - nix-cache-stuff-v2-{{ .Branch }}-
+            - nix-cache-stuff-v2-
 
       - run:
           name: Restore nix cache
           command: |
-            if [ -e /nix-cache/deploy.nar ]; then
-              echo "/nix-cache/deploy.nar present, importing into store."
-              nix-store --import < /nix-cache/deploy.nar
+            if [ -e /nix-cache/stuff.nar ]; then
+              echo "/nix-cache/stuff.nar present, importing into store."
+              nix-store --import < /nix-cache/stuff.nar
             else
-              echo "/nix-cache/deploy.nar missing, skipping store import."
+              echo "/nix-cache/stuff.nar missing, skipping store import."
             fi
 
       - setup_remote_docker
@@ -60,13 +60,13 @@ jobs:
           command: |
             nix-shell .circleci/stuff.nix --run bash <<'NIXSH'
             mkdir -p /nix-cache
-            nix-store --export $(cached-packages) > /nix-cache/deploy.nar
+            nix-store --export $(cached-packages) > /nix-cache/stuff.nar
             NIXSH
 
       - save_cache:
-          key: nix-cache-deploy-v1-
+          key: nix-cache-stuff-v2-
           paths:
-            - /nix-cache/deploy.nar
+            - /nix-cache/stuff.nar
 
 workflows:
   version: 2
