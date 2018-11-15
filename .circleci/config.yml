@@ -1,0 +1,71 @@
+references:
+  prepare_ci: &prepare_container
+    run:
+      name: Prepare Container
+      command: |
+        nix-channel --add \
+        https://nixos.org/channels/nixpkgs-unstable nixpkgs && \
+        nix-channel --update
+
+version: 2
+jobs:
+  test:
+    docker:
+      - image: nixorg/nix:circleci
+    steps:
+
+      - checkout
+
+      - *prepare_container
+
+      - run:
+          name: Test
+          command: |
+            nix-shell .circleci/test.nix --run "echo there are no tests"
+
+  stuff:
+    docker:
+      - image: nixorg/nix:circleci
+    steps:
+
+      - checkout
+
+      - *prepare_container
+
+      - restore_cache:
+          keys:
+            - nix-cache-deploy-v1-{{ .Branch }}-{{ .Revision }}
+            - nix-cache-deploy-v1-{{ .Branch }}-
+            - nix-cache-deploy-v1-
+
+      - run:
+          name: Restore nix cache
+          command: |
+            test -e /nix-cache/deploy.nar && nix-store --import < /nix-cache/deploy.nar
+
+      - setup_remote_docker
+
+      - run:
+          name: Thingamajig step
+          command: |
+            nix-shell .circleci/stuff.nix --run stuff-stuff
+
+      - run:
+          name: Create nix cache
+          command: |
+            nix-shell .circleci/stuff.nix --run bash <<'NIXSH'
+            mkdir -p /nix-cache
+            nix-store --export $(cached-packages) > /nix-cache/deploy.nar
+            NIXSH
+
+      - save_cache:
+          key: nix-cache-deploy-v1-
+          paths:
+            - /nix-cache/deploy.nar
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - test
+      - stuff
