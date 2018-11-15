@@ -4,6 +4,7 @@
   docker,
   kustomize,
   google-cloud-sdk,
+  which,
   ...
  }:
 
@@ -34,9 +35,9 @@ rec {
 
   cached-packages = writeStrictShellScriptBin "cached-packages" ''
     nix-store -qR \
-       $(which docker) \
-       $(which gcloud) \
-       $(which kustomize)
+       $(${which}/bin/which docker) \
+       $(${which}/bin/which gcloud) \
+       $(${which}/bin/which kustomize)
   '';
 
 }
