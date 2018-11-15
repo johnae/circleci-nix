@@ -73,6 +73,6 @@ workflows:
   build:
     jobs:
       - test
-      - stuff
+      - stuff:
           requires:
             - test
